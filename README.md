@@ -10,7 +10,7 @@ This code works on a virtual disk "disk.teasage" of block size.
 * Delete a Files form Disk
 
 
-###About the Code:
+### About the Code:
 Disk has been divided mainly into two parts.
 The first part is approximately 12% of the disk size.This part is being used to store the meta data,the structures and the free block bit array.
 The structres conatins all the relevant data of the file stored in the disk.
