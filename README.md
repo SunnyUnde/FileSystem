@@ -45,19 +45,19 @@ The blocksize of the virtual Disk must be stored in the file named 'diskdetailed
 *logfile* is created which stores all the latest information done on the disk.  
 *testResult* contains the result of correctness of the information like copying into/from Disk and deletion of file in Disk.
 ### Main Subroutines:
-* Stores File into Virtual Disk:
-	`vdcpto(char* filepath,char* filename)`:
+* Stores File into Virtual Disk:  
+	`vdcpto(char* filepath,char* filename)`:  
 filepath: is file path of file on actual disk which is to be copied on the disk, filename: is the name to be used to stored the file.
 It returns negative value on error and 1 for sucessfull storing the file.
 * Copies File from Virtual Disk into Actual Disk.  
 	`vdcpfrom(char* filepath,char* filename)`:  
 filepath:is the path where the file has to be stored, filename:is the name of the file in virtual disk which is to be stored.
 It returns negative value on occurence of error and 1 for successful completion of the subroutine.
-* Delets File from Virtual Disk.
+* Delets File from Virtual Disk.  
 	`DeleteFromDisk(char* filename)`:  
 filename:is the name of the file to be deleted from the virtual disk.  
 It returns negative value on occurence of error and 1 for successful completion of the subroutine.
-* Displays File present on Virtual Disk.
+* Displays File present on Virtual Disk.  
 	`vdls(char* buff)`:  
 buff: is the buffer in which the filename is to be stored. The buffers first 8 bytes must be reserved(First 4bytes indicates the index of the struct to be read and next 4 bytes indicates the size of the buffer).  
 It returns the number of files read and negative value at occurence of Error.
