@@ -1,63 +1,92 @@
 # FileSystem
 
-## Code is written in C language 
+## Overview
+This code is written in C language and operates on a virtual disk named "disk.teasage".
 
-This code works on a virtual disk named as *"disk.teasage"*.
-### Functanalities available in current code are:
-* Store a file into disk
-* Retrieve a file from disk
+## Available Functionality
+* Store files into disk
+* Retrieve files from disk
 * List all files available on disk
-* Delete a file form disk
+* Delete files from disk
 
+## Technical Details
 
-### About the Code:
-Disk has been divided mainly into two parts.  
-The first part is approximately 12% of the disk size.This part is being used to store the meta data,the structures and the free block bit array.  
-The structres conatins all the relevant data of the file stored in the disk.  
-**Struct is as follow:**
-```C  
-struct File1  
-{  
-	char filename[48];  
-	unsigned int start;  
-	unsigned int size;  
-	unsigned int last;  
-	unsigned int next;  
-}; 
-``` 
-1. _filename_ :stores the name of the file.
-2. _start_ : stores the starting block number where the files's data is stored.
-3. _size_ : stores number of continous block from the starting block.
-4. _last_ : stores either the number of relevant data in the last block of the file or 0 which indicates that this is not the last structure of this file.
-5. _next_ : stores either the index of the next file after this or the index of the next struct of the same file when the last==0
+### Disk Structure
+The disk is divided into two main parts:
+1. The first part (~12% of disk size) stores:
+   - Metadata
+   - File structures
+   - Free block bit array
+2. The second part stores the actual file data
 
-The first structure is being used to store the Disk information.  
-*Free Bit* array has been implemented to know which blocks from the second part are free( 0 bit indicates the block is free and vice versa).
+### File Structure
+Each file is represented by the following structure:
+```C
+struct File1 {
+    char filename[48];
+    unsigned int start;
+    unsigned int size;
+    unsigned int last;
+    unsigned int next;
+};
+```
 
-Automation has been implemented to check if file being copied to/from Disk and file being deleted is done properly or not.  
-The result of this is being stored in the file named *'testResult'*.   
-Here the 1 indicates that the two file has copied to/from Disk have same data and -1 indicates that the operation has not been done correctly.  
-There is issue of deleted file as the information of all file being copied to/from the Disk is stored prior to its deletion from the virtual disk the checing of those files results in output being -1. This issue is yet to be handled in this code, reason for it being as checking or storing information of the deleted files will take either time or space.  
+Structure fields:
+- `filename`: Name of the file
+- `start`: Starting block number where file data is stored
+- `size`: Number of continuous blocks from the starting block
+- `last`: Either contains the number of bytes in the last block, or 0 to indicate this is not the last structure of the file
+- `next`: Either contains the index of the next file, or the index of the next structure of the same file (when last==0)
 
-To check the deletion operation being performed correctly the file is searched in the disk. If not found the value 1 is being displayed in the file else -1 is displayed in the file.  
+### Implementation Details
+- The first structure stores disk information
+- A Free Bit array tracks block availability (0 = free, 1 = occupied)
+- Block size must be:
+  - At least the size of `struct File1`
+  - Preferably a multiple of `struct File1` size to reduce internal fragmentation
 
-The blocksize of the virtual Disk must be stored in the file named 'diskdetailed'.(minimum block size must be size of struct File1,block size in the multiple of the size of struct File1 will help in reducing internal fragmentation).If the block size is changed then the previous disk with old blocksize must be deleted manually.  
-*logfile* is created which stores all the latest information done on the disk.  
-*testResult* contains the result of correctness of the information like copying into/from Disk and deletion of file in Disk.
-### Main Subroutines:
-* Stores File into Virtual Disk:  
-	`vdcpto(char* filepath,char* filename)`:  
-filepath: is file path of file on actual disk which is to be copied on the disk, filename: is the name to be used to stored the file.
-It returns negative value on error and 1 for sucessfull storing the file.
-* Copies File from Virtual Disk into Actual Disk.  
-	`vdcpfrom(char* filepath,char* filename)`:  
-filepath:is the path where the file has to be stored, filename:is the name of the file in virtual disk which is to be stored.
-It returns negative value on occurence of error and 1 for successful completion of the subroutine.
-* Delets File from Virtual Disk.  
-	`DeleteFromDisk(char* filename)`:  
-filename:is the name of the file to be deleted from the virtual disk.  
-It returns negative value on occurence of error and 1 for successful completion of the subroutine.
-* Displays File present on Virtual Disk.  
-	`vdls(char* buff)`:  
-buff: is the buffer in which the filename is to be stored. The buffers first 8 bytes must be reserved(First 4bytes indicates the index of the struct to be read and next 4 bytes indicates the size of the buffer).  
-It returns the number of files read and negative value at occurence of Error.
+### System Files
+- `diskdetailed`: Stores the block size configuration
+- `logfile`: Records all recent disk operations
+- `testResult`: Contains operation verification results
+  - 1: Successful operation (files match or deletion confirmed)
+  - -1: Failed operation
+
+**Note**: When changing block size, the previous disk file must be manually deleted.
+
+## Main Functions
+
+### 1. Store File (Virtual Disk Copy To)
+```C
+int vdcpto(char* filepath, char* filename)
+```
+- `filepath`: Source file path on the actual disk
+- `filename`: Desired name for storage in virtual disk
+- Returns: 1 for success, negative value for error
+
+### 2. Retrieve File (Virtual Disk Copy From)
+```C
+int vdcpfrom(char* filepath, char* filename)
+```
+- `filepath`: Destination path on actual disk
+- `filename`: Name of file in virtual disk
+- Returns: 1 for success, negative value for error
+
+### 3. Delete File
+```C
+int DeleteFromDisk(char* filename)
+```
+- `filename`: Name of file to delete
+- Returns: 1 for success, negative value for error
+
+### 4. List Files
+```C
+int vdls(char* buff)
+```
+- `buff`: Buffer to store filenames
+  - First 4 bytes: Index of structure to read
+  - Next 4 bytes: Buffer size
+- Returns: Number of files read or negative value for error
+
+### Known Issues
+The testing system stores file information before deletion operations. This causes deleted file checks to return -1 in the test results. This limitation exists to avoid additional time or space overhead in tracking deleted files.
