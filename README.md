@@ -4,10 +4,10 @@
 
 This code works on a virtual disk named as *"disk.teasage"*.
 ### Functanalities available in current code are:
-* Store a File into Disk
-* Retrieve a File from Disk
-* List all Files available on Disk
-* Delete a Files form Disk
+* Store a file into disk
+* Retrieve a file from disk
+* List all files available on disk
+* Delete a file form disk
 
 
 ### About the Code:
